@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Finalizar Compra - BAESMarket</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial;
+            background: #f8f8f8;
+            padding: 2em;
+            text-align: center;
+        }
+
+        form {
+            background: white;
+            padding: 2em;
+            max-width: 400px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+
+        
+
+        button {
+            margin-top: 1.5em;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 0.8em 1.2em;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .mensaje {
+            margin-top: 1em;
+            font-weight: bold;
+        }
+
+        a {
+            display: block;
+            margin-top: 2em;
+            color: #0071bc;
+            text-decoration: none;
+        }
+
+                .codigo-box {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 1em;
+        }
+
+        .codigo-box input {
+            width: 60px;
+            height: 60px;
+            font-size: 2em;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>🎫 Finalizar Compra con Ticket Junaeb</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="mensaje" style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+                {{ message }}
+            </p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" id="codigoForm">
+        {% csrf_token %}
+        <label>Ingresa tu código de 4 dígitos:</label>
+
+        <div class="codigo-box">
+            <input type="text" maxlength="1" pattern="\d*" inputmode="numeric" required>
+            <input type="text" maxlength="1" pattern="\d*" inputmode="numeric" required>
+            <input type="text" maxlength="1" pattern="\d*" inputmode="numeric" required>
+            <input type="text" maxlength="1" pattern="\d*" inputmode="numeric" required>
+        </div>
+
+        <!-- Campo oculto donde se unirá el código -->
+        <input type="hidden" name="codigo_qr" id="codigo_qr">
+
+        <button type="submit">Confirmar Pago</button>
+
+    <a href="{% url 'ver_carrito' %}">← Volver al carrito</a>
+
+</body>
+</html>
+
+    <script>
+        const form = document.getElementById('codigoForm');
+        const inputs = form.querySelectorAll('.codigo-box input');
+        const hiddenInput = document.getElementById('codigo_qr');
+
+        // Auto focus al siguiente campo
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', () => {
+                if (input.value && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+        });
+
+        // Al enviar el formulario, unir los valores
+        form.addEventListener('submit', function(e) {
+            const codigo = Array.from(inputs).map(input => input.value).join('');
+            hiddenInput.value = codigo;
+        });
+    </script>

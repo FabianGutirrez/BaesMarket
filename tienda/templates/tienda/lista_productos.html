@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>BAESMarket</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8f8f8;
+        }
+
+        header {
+            background: #f07f15;
+            color: white;
+            padding: 1em;
+            text-align: center;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav {
+            background: #f0f0f0;
+            padding: 1em;
+            overflow-x: auto;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #c7a119;
+            font-weight: bold;
+        }
+
+        .banner {
+            width: 100%;         /* ocupa todo el ancho de la página */
+            height: 300px;       /* ajusta el alto según lo que necesites */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .banner img {
+            width: 100%;         /* escala horizontalmente */
+            height: 100%;        /* escala verticalmente */
+            object-fit: cover;   /* recorta la imagen manteniendo proporciones */
+        }
+
+
+        .productos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 2em;
+        }
+
+        .producto {
+            width: 230px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+        }
+
+        .producto:hover {
+            transform: scale(1.03);
+        }
+
+        .producto img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .producto h3, .producto p {
+            margin: 0.5em 1em;
+        }
+
+        .producto p {
+            color: #333;
+        }
+
+        .producto form {
+            text-align: center;
+            margin: 1em;
+        }
+
+        .producto button {
+            background-color: #0071bc;
+            color: white;
+            padding: 0.5em 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .producto button:hover {
+            background-color: #005b94;
+        }
+
+        @media screen and (max-width: 600px) {
+            .producto {
+                width: 90%;
+            }
+        }
+
+        .slider {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 1em;
+            background: #fff;
+            margin: 1em;
+            border-radius: 10px;
+        }
+
+        .slide {
+            min-width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            flex-shrink: 0;
+            padding: 1em;
+            background: #fafafa;
+            text-align: center;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .boton-carrito-contenedor {
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .boton-carrito-contenedor:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        .boton-carrito {
+            text-decoration: none;
+            font-weight: bold;
+            color: #007bff;
+            font-size: 16px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="banner">
+    <img src="{% static 'tienda/img/BAESMarket.png' %}" alt="Banner Junaeb Market">
+    </div>
+
+<div style="margin-top: 10px;">
+    <div class="boton-carrito-contenedor">
+        <a href="{% url 'ver_carrito' %}" class="boton-carrito">
+            🛒 Carrito ({{ request.session.carrito|length|default:"0" }})
+        </a>
+    </div>
+</div>
+
+</header>
+
+<!-- Banner 
+<div style="background: #0071bc; color: white; padding: 1em; text-align: center; font-size: 1.5em;">
+    Bienvenido a Junaeb Market 🛍️
+</div>-->
+
+
+<!-- Slider de productos destacados -->
+<h2 style="text-align:center; margin-top: 1em;">🌟 Productos Destacados</h2>
+<div class="slider">
+    {% for producto in productos_destacados %}
+        <div class="slide">
+            {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+            {% endif %}
+            <h3>{{ producto.nombre }}</h3>
+            <p>${{ producto.precio }}</p>
+
+            <div class="form-container">
+                <button onclick="mostrarFormularioDestacado('{{ producto.id }}')" class="mostrar-btn">Agregar al carrito</button>
+
+                <form id="formulario-destacado-{{ producto.id }}" action="{% url 'agregar_al_carrito' producto.id %}" method="post" style="display: none; margin-top: 10px;">
+                    {% csrf_token %}
+                    <input type="number" name="cantidad" value="1" min="1" required style="width: 60px;">
+                    <button type="submit">Confirmar</button>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+
+
+<!-- Todos los productos -->
+<h2 style="text-align:center; margin-top: 2em;">🛒 Todos los productos</h2>
+
+
+<!-- Navegación por Categorías -->
+<nav>
+    <a href="{% url 'lista_productos' %}">Todos</a>
+    {% for categoria in categorias %}
+        <a href="{% url 'productos_por_categoria' categoria.id %}">{{ categoria.nombre }}</a>
+    {% endfor %}
+</nav>
+
+<main class="productos">
+    {% for producto in productos %}
+        <div class="producto">
+            {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+            {% endif %}
+            <h3>{{ producto.nombre }}</h3>
+            <p>${{ producto.precio }}</p>
+            <p>{{ producto.descripcion }}</p>
+
+        <div class="form-container" style="text-align: center;">
+            <button onclick="mostrarFormulario('{{ producto.id }}')" class="mostrar-btn">Agregar al carrito</button>
+
+            <form id="formulario-{{ producto.id }}" action="{% url 'agregar_al_carrito' producto.id %}" method="post" style="display: none; margin-top: 10px;">
+                {% csrf_token %}
+                <input type="number" name="cantidad" value="1" min="1" required style="width: 60px;">
+                <button type="submit">Confirmar</button>
+            </form>
+        </div>
+
+
+
+
+
+        </div>
+    {% empty %}
+        <p style="text-align:center;">No hay productos disponibles.</p>
+    {% endfor %}
+</main>
+
+<footer style="background-color: #f7a23b; padding: 40px 20px; font-family: Arial, sans-serif; font-size: 14px; border-top: 3px solid #f07f15;">
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-around; text-align: left; max-width: 1200px; margin: auto;">
+
+    <!-- Columna 1: Logo e info -->
+    <div style="flex: 1; min-width: 200px; margin: 10px;">
+      <img src="{% static 'tienda/img/logobaes.png' %}" alt="Junaeb Market" style="width: 150px; margin-bottom: 10px;">
+      <p><strong>Baes Market</strong></p>
+      <p>Compra productos usando tu Beca BAES</p>
+      <p>Proyecto estudiantil - 2025</p>
+      <p>Contacto: contacto@baesmarket.cl</p>
+    </div>
+
+    <!-- Columna 2: Productos -->
+    <div style="flex: 1; min-width: 150px; margin: 10px;">
+      <h3 style="margin-bottom: 10px;">Productos</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li><a href="#" style="text-decoration: none; color: black;">Alimentos</a></li>
+        <li><a href="#" style="text-decoration: none; color: black;">Bebidas</a></li>
+        <li><a href="#" style="text-decoration: none; color: black;">Snacks</a></li>
+        <li><a href="#" style="text-decoration: none; color: black;">Despensa</a></li>
+      </ul>
+    </div>
+
+    <!-- Columna 3: Información -->
+    <div style="flex: 1; min-width: 150px; margin: 10px;">
+      <h3 style="margin-bottom: 10px;">Información</h3>
+      <ul style="list-style: none; padding: 0;">
+        <li><a href="#" style="text-decoration: none; color: black;">Cómo funciona</a></li>
+        <li><a href="#" style="text-decoration: none; color: black;">Términos y condiciones</a></li>
+        <li><a href="#" style="text-decoration: none; color: black;">Preguntas frecuentes</a></li>
+        <li><a href="#" style="text-decoration: none; color: black;">Contáctanos</a></li>
+      </ul>
+    </div>
+
+    <!-- Columna 4: Métodos de pago -->
+    <div style="flex: 1; min-width: 150px; margin: 10px;">
+      <h3 style="margin-bottom: 10px;">Métodos de pago</h3>
+      <img src="{% static 'tienda/img/junaeb.png' %}" alt="Webpay y Redcompra" style="width: 120px;"><br>
+      <img src="{% static 'tienda/img/pago.png' %}" alt="Webpay y Redcompra" style="width: 120px;"><br>
+      <p style="margin-top: 10px;">Pagos con Beca BAES a través de la app Ticket Junaeb.</p>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 30px; color: #777;">
+    <p>© 2025 - Baes Market. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+
+<script>
+    function mostrarFormulario(id) {
+        const formulario = document.getElementById('formulario-' + id);
+        formulario.style.display = 'block';
+
+        // Ocultar el botón "Agregar al carrito"
+        const btn = formulario.previousElementSibling;
+        btn.style.display = 'none';
+    }
+
+        function mostrarFormularioDestacado(id) {
+        const formulario = document.getElementById('formulario-destacado-' + id);
+        formulario.style.display = 'block';
+
+        const btn = formulario.previousElementSibling;
+        btn.style.display = 'none';
+    }
+</script>
+
