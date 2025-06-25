@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito - BAESMarket</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f8f8; padding: 1em; }
+        h1 { color: #0071bc; text-align: center; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 1em;
+        }
+
+        th, td {
+            padding: 1em;
+            border-bottom: 1px solid #ccc;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #0071bc;
+            color: white;
+        }
+
+        img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .acciones a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: #0071bc;
+            font-weight: bold;
+        }
+
+        .acciones a:hover {
+            text-decoration: underline;
+        }
+
+        .total {
+            text-align: right;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 1em;
+        }
+
+        .botones {
+            margin-top: 1.5em;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .botones a {
+            padding: 0.6em 1.2em;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .vaciar {
+            background: #dc3545;
+            color: white;
+        }
+
+        .comprar {
+            background: #28a745;
+            color: white;
+        }
+
+        .volver {
+            display: block;
+            margin-top: 2em;
+            text-align: center;
+            color: #0071bc;
+            text-decoration: none;
+        }
+
+        .banner {
+            width: 100%;         /* ocupa todo el ancho de la página */
+            height: 300px;       /* ajusta el alto según lo que necesites */
+            overflow: hidden;
+            position: relative;
+        }
+
+        .banner img {
+            width: 100%;         /* escala horizontalmente */
+            height: 100%;        /* escala verticalmente */
+            object-fit: cover;   /* recorta la imagen manteniendo proporciones */
+        }
+
+        .acciones a {
+            font-size: 1.2em;
+            padding: 0.3em;
+            margin-right: 0.3em;
+        }
+    </style>
+</head>
+<header>
+    <div class="banner">
+    <img src={% static 'tienda/img/BAESMarket.png' %} alt="Banner Junaeb Market">
+    </div>
+</header>
+
+<body>
+
+    <h1>🛒 Tu Carrito</h1>
+
+    {% if productos %}
+        <table>
+            <tr>
+                <th>Imagen</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th>Acciones</th>
+            </tr>
+            {% for item in productos %}
+            <tr>
+                <td>
+                    {% if item.imagen %}
+                        <img src="{{ item.imagen }}" alt="{{ item.nombre }}">
+
+                    {% else %}
+                        <img src="{% static 'img/no-image.png' %}" alt="Sin imagen">
+                    {% endif %}
+                </td>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.cantidad }}</td>
+                <td>${{ item.subtotal|floatformat:0 }}</td>
+                <td class="acciones">
+                    <a href="{% url 'aumentar_cantidad' item.producto_id %}">➕</a>
+                    <a href="{% url 'quitar_del_carrito' item.producto_id %}">➖ </a>
+                    <a href="{% url 'eliminar_del_carrito' item.producto_id %}">🗑️ Eliminar</a>
+                    
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <p class="total">Total: ${{ total|floatformat:0 }}</p>
+
+        <div class="botones">
+            <a href="{% url 'vaciar_carrito' %}" class="vaciar">🗑️ Vaciar carrito</a>
+            <a href="{% url 'finalizar_compra' %}" class="comprar">🎫 Finalizar compra con Ticket Junaeb</a>
+        </div>
+
+    {% else %}
+        <p style="text-align:center; margin-top: 2em;">Tu carrito está vacío.</p>
+    {% endif %}
+
+    <a href="{% url 'lista_productos' %}" class="volver">← Volver a la tienda</a>
+
+</body>
+</html>
+

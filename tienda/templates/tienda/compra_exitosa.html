@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>¡Gracias por tu compra! - BAESMarket</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f8f8; padding: 2em; text-align: center; }
+        h1 { color: #28a745; }
+        table {
+            margin: 2em auto;
+            width: 100%;
+            max-width: 800px;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 1em;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #0071bc;
+            color: white;
+        }
+        img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: right;
+            margin-top: 1em;
+        }
+        a {
+            display: inline-block;
+            margin-top: 2em;
+            text-decoration: none;
+            color: white;
+            background: #0071bc;
+            padding: 0.8em 1.5em;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🎉 ¡Gracias por tu compra!</h1>
+    <p>Tu pedido ha sido confirmado exitosamente.</p>
+
+    <table>
+        <tr>
+            <th>Imagen</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+        </tr>
+        {% for item in productos %}
+        <tr>
+            <td>
+                {% if item.imagen %}
+                    <img src="{{ item.imagen }}" alt="{{ item.nombre }}">
+                {% else %}
+                    <img src="{% static 'img/no-image.png' %}" alt="Sin imagen">
+                {% endif %}
+            </td>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.cantidad }}</td>
+            <td>${{ item.subtotal|floatformat:0 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p class="total">Total de la compra: <strong>${{ total|floatformat:0 }}</strong></p>
+
+    <a href="{% url 'lista_productos' %}">← Volver a la tienda</a>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Validar Código - BAESMarket</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f9ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .codigo-container {
+            background: white;
+            padding: 2em 3em;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .codigo-container h2 {
+            color: #0071bc;
+            margin-bottom: 1em;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .input-group input {
+            width: 60px;
+            height: 60px;
+            font-size: 2em;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            transition: border 0.2s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #0071bc;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0,113,188,0.5);
+        }
+
+        button {
+            margin-top: 1.5em;
+            padding: 12px 24px;
+            background: #0071bc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #005fa3;
+        }
+
+        .mensaje-error {
+            color: red;
+            margin-top: 1em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="codigo-container">
+        <h2>🔐 Ingresa tu Código Junaeb</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" name="digito1" maxlength="1" required autofocus pattern="[0-9]">
+                <input type="text" name="digito2" maxlength="1" required pattern="[0-9]">
+                <input type="text" name="digito3" maxlength="1" required pattern="[0-9]">
+                <input type="text" name="digito4" maxlength="1" required pattern="[0-9]">
+            </div>
+            <button type="submit">Validar Código</button>
+        </form>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="mensaje-error">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+</body>
+</html>
+
+<script>
+    const inputs = document.querySelectorAll('.input-group input');
+    inputs.forEach((input, idx) => {
+        input.addEventListener('input', () => {
+            if (input.value.length === 1 && idx < inputs.length - 1) {
+                inputs[idx + 1].focus();
+            }
+        });
+    });
+</script>
